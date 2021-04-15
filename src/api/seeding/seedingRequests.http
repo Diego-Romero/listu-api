@@ -1,0 +1,2 @@
+### seed all
+GET http://localhost:8080/seeding HTTP/1.1
