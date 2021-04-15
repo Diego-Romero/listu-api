@@ -1,12 +1,13 @@
 {
-  "name": "deepflow-server",
+  "name": "listu-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/app.js",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --config nodemon.json src/app.ts",
     "build": "rm -rf ./dist && ./node_modules/typescript/bin/tsc",
-    "start": "npm run build && node -r dotenv/config dist/app.js",
+    "start": "node -r dotenv/config dist/app.js",
+    "serve": "npm run build && npm run start",
     "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .ts",

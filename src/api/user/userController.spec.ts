@@ -3,10 +3,7 @@ import supertest from 'supertest';
 import app from '../../app';
 import setupDB from '../../loaders/test-setup';
 import SeedingService from '../../services/seedingService/seedingService';
-import {
-  seedingUserEmail,
-  seedingUserPassword,
-} from '../../services/seedingService/user.seed';
+import { seedingUserEmail, seedingUserPassword } from '../../services/seedingService/user.seed';
 const request = supertest(app);
 
 setupDB('user');
@@ -52,9 +49,7 @@ describe('User controller', () => {
       password: seedingUserPassword,
     });
     const cookie = loginRes.headers['set-cookie'];
-    const response = await request
-      .get(`/user/me`)
-      .set('cookie', cookie);
+    const response = await request.get(`/user/me`).set('cookie', cookie);
     expect(response.status).toBe(OK);
     done();
   });

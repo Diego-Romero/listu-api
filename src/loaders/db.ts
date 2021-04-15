@@ -1,16 +1,18 @@
-import Mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import config from '../config/config';
 
-Mongoose.connect('mongodb://localhost/listu', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
+const uri = config.dbConnection as string;
 
-const db = Mongoose.connection;
-db.on('error', console.error.bind(console, 'DB CONNECTION ERROR'));
-db.on('open', function () {
-  if (config.env !== 'test') {
-    console.log('DB connected successfully');
-  }
-});
+try {
+  mongoose.connect(
+    uri,
+    {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+    },
+    () => console.log('DB connected successfully'),
+  );
+} catch (e) {
+  console.error(`Error connecting to the db`, e);
+}

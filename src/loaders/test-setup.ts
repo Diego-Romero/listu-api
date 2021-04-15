@@ -4,8 +4,7 @@ import mongoose from 'mongoose';
 export async function removeAllCollections(): Promise<void> {
   const collections = Object.keys(mongoose.connection.collections);
   for (const collectionName of collections) {
-    const collection =
-      mongoose.connection.collections[collectionName];
+    const collection = mongoose.connection.collections[collectionName];
     await collection.deleteMany({});
   }
 }
@@ -13,8 +12,7 @@ export async function removeAllCollections(): Promise<void> {
 export async function dropAllCollections(): Promise<void> {
   const collections = Object.keys(mongoose.connection.collections);
   for (const collectionName of collections) {
-    const collection =
-      mongoose.connection.collections[collectionName];
+    const collection = mongoose.connection.collections[collectionName];
     try {
       await collection.drop();
     } catch (error) {
@@ -22,12 +20,7 @@ export async function dropAllCollections(): Promise<void> {
       if (error.message === 'ns not found') return;
       // This error occurs when you use it.todo. You can
       // safely ignore this error too
-      if (
-        error.message.includes(
-          'a background operation is currently running',
-        )
-      )
-        return;
+      if (error.message.includes('a background operation is currently running')) return;
       console.log(error.message);
     }
   }
