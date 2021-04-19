@@ -11,7 +11,9 @@ try {
       useCreateIndex: true,
       useUnifiedTopology: true,
     },
-    () => console.log('DB connected successfully'),
+    () => {
+      if (config.env !== 'test') console.log('DB connected successfully');
+    },
   );
 } catch (e) {
   console.error(`Error connecting to the db`, e);

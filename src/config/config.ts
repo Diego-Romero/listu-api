@@ -14,7 +14,7 @@ const config: Config = {
   saltRounds: process.env.NODE_ENV === 'production' ? 12 : 1,
 };
 
-console.log('config', config);
+if (config.env !== 'test') console.log('config', config);
 
 for (const value of Object.values(config)) {
   if (value === undefined) throw new Error('ERROR: missing to add fields to .env');

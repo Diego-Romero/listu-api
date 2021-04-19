@@ -9,7 +9,6 @@ export async function hashPassword(password: string): Promise<string> {
 
 class UserService {
   async register(user: UserSignUpDto): Promise<User> {
-    console.log('trying to create user');
     const password = await hashPassword(user.password);
     const userRecord = await UserModel.create({ ...user, password });
     return userRecord;

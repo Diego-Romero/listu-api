@@ -9,11 +9,14 @@ import { isAuthenticated } from '../../middleware/isAuthenticated';
 
 const userRouter = express.Router();
 
-userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res) => {
+userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res, next) => {
   const userService = new UserService();
   try {
-    await userService.register(req.body);
-    return res.status(status.CREATED).json({ message: 'Account created.' });
+    const user = await userService.register(req.body);
+    req.login(user, function (err) {
+      if (err) return next(err);
+      return res.status(status.CREATED).json({ message: 'Account created.' });
+    });
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({ message: 'Email already exists' });
   }
