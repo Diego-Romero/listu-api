@@ -4,6 +4,7 @@ interface Config {
   sessionSecret: string | undefined;
   saltRounds: number;
   dbConnection: string | undefined;
+  clientUrl: string | undefined;
 }
 
 const config: Config = {
@@ -11,6 +12,7 @@ const config: Config = {
   env: process.env.NODE_ENV,
   sessionSecret: process.env.SESSION_SECRET,
   dbConnection: process.env.DB_CONNECTION,
+  clientUrl: process.env.CLIENT_URL,
   saltRounds: process.env.NODE_ENV === 'production' ? 12 : 1,
 };
 

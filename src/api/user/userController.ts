@@ -26,8 +26,9 @@ userRouter.post(
   '/login',
   validateDTO(UserLoginDto),
   passport.authenticate('local'),
-  async (_req, res) => {
-    res.sendStatus(status.OK);
+  async (req, res) => {
+    const { user } = req;
+    res.status(status.OK).json(user);
   },
 );
 

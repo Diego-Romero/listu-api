@@ -22,7 +22,13 @@ export function setMiddleWare(app: Express): void {
     sessionConfig.cookie.secure = true; // serve secure cookies
   }
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: config.clientUrl,
+      methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
+      credentials: true,
+    }),
+  );
   app.use(session(sessionConfig)); // sessions has to go before passport sessions
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
