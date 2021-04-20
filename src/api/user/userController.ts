@@ -6,6 +6,8 @@ import UserSignUpDto from '../../dto/user/userSignUpDto';
 import validateDTO from '../../middleware/validateDto';
 import UserLoginDto from '../../dto/user/userLoginDto';
 import { isAuthenticated } from '../../middleware/isAuthenticated';
+import { filterUserInReq } from '../../utils';
+import { User } from '../../models/userModel';
 
 const userRouter = express.Router();
 
@@ -15,7 +17,7 @@ userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res, next) 
     const user = await userService.register(req.body);
     req.login(user, function (err) {
       if (err) return next(err);
-      return res.status(status.CREATED).json({ message: 'Account created.' });
+      return res.status(status.CREATED).json(filterUserInReq(user as User));
     });
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({ message: 'Email already exists' });
@@ -28,7 +30,7 @@ userRouter.post(
   passport.authenticate('local'),
   async (req, res) => {
     const { user } = req;
-    res.status(status.OK).json(user);
+    res.status(status.OK).json(filterUserInReq(user as User));
   },
 );
 
@@ -39,7 +41,7 @@ userRouter.post('/logout', async (req, res) => {
 
 userRouter.get('/me', isAuthenticated, async (req, res) => {
   const { user } = req;
-  res.status(OK).json(user);
+  res.status(status.OK).json(filterUserInReq(user as User));
 });
 
 export default userRouter;
