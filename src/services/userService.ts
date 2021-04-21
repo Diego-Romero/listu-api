@@ -13,6 +13,13 @@ class UserService {
     const userRecord = await UserModel.create({ ...user, password });
     return userRecord;
   }
+
+  async getUser(userId: string): Promise<User> {
+    const userRecord = await UserModel.findById(userId);
+    console.log(userId, userRecord);
+    if (userRecord === null) throw new Error('User does not exists');
+    return userRecord;
+  }
 }
 
 export default UserService;

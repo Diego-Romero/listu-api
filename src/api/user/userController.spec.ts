@@ -18,6 +18,7 @@ describe('User controller', () => {
       password: 'password',
     });
     expect(response.status).toBe(CREATED);
+    // todo: test should also check that it returns user in the body and the login cookie
     done();
   });
 
@@ -27,6 +28,7 @@ describe('User controller', () => {
       email: seedingUserEmail,
       password: seedingUserPassword,
     });
+    // todo: test should also check that it returns user in the body and the login cookie
     expect(response.status).toBe(OK);
     done();
   });
@@ -50,6 +52,7 @@ describe('User controller', () => {
     });
     const cookie = loginRes.headers['set-cookie'];
     const response = await request.get(`/user/me`).set('cookie', cookie);
+    // todo: test should also check that it returns user in the body
     expect(response.status).toBe(OK);
     done();
   });

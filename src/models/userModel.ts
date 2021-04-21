@@ -4,6 +4,7 @@ export interface User extends Document {
   email: string;
   name: string;
   password: string;
+  id: string;
 }
 
 const schema = new mongoose.Schema(
@@ -27,6 +28,12 @@ const schema = new mongoose.Schema(
       minlength: 4,
       maxlength: 100,
     },
+    lists: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'List',
+      },
+    ],
   },
   { timestamps: true },
 );

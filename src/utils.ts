@@ -7,5 +7,5 @@ interface FilteredUser {
 }
 
 export function filterUserInReq(user: User): FilteredUser {
-  return pick(['name', 'email'], user);
+  return pick(['name', 'email', 'createdAt', 'lists', '_id'], user);
 }
