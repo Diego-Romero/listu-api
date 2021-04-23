@@ -6,6 +6,9 @@ interface CreateListValues {
   description: string;
 }
 class ListService {
+  async getListById(id: string): Promise<List | null> {
+    return await ListModel.findById(id).populate('users');
+  }
   async createList(values: CreateListValues, user: User): Promise<List> {
     const userId = user._id;
     const listValues = { createdBy: user._id, users: [user._id], ...values };
