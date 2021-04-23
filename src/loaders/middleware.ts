@@ -36,5 +36,6 @@ export function setMiddleWare(app: Express): void {
   app.use(bodyParser.json());
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use(morgan('dev'));
+  const morganFormat = config.env === 'production' ? 'combined' : 'dev';
+  app.use(morgan(morganFormat));
 }

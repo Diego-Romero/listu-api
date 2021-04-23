@@ -5,11 +5,10 @@ export interface User extends Document {
   email: string;
   name: string;
   password: string;
-  id: string;
   lists: List[];
 }
 
-const schema = new mongoose.Schema(
+const schema = new mongoose.Schema<User>(
   {
     name: {
       type: String,

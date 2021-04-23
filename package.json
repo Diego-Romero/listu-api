@@ -28,7 +28,6 @@
     "@types/jest": "^26.0.20",
     "@types/mongoose": "5.10.1",
     "@types/morgan": "^1.9.2",
-    "@types/node": "^14.14.16",
     "@types/passport": "^1.0.5",
     "@types/passport-local": "^1.0.33",
     "@types/ramda": "^0.27.40",
@@ -48,6 +47,7 @@
     "ts-node": "^9.1.1"
   },
   "dependencies": {
+    "@types/node": "^14.14.41",
     "bcrypt": "^5.0.0",
     "class-sanitizer": "^1.0.1",
     "class-transformer": "^0.3.2",
