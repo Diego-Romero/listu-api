@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "license": "MIT",
+  "engines": {
+    "node": "12.18.0"
+  },
   "scripts": {
     "dev": "nodemon --config nodemon.json src/app.ts",
     "build": "rm -rf ./dist && ./node_modules/typescript/bin/tsc",
