@@ -1,10 +1,12 @@
 import mongoose, { Document } from 'mongoose';
+import { List } from './list-model';
 
 export interface User extends Document {
   email: string;
   name: string;
   password: string;
   id: string;
+  lists: List[];
 }
 
 const schema = new mongoose.Schema(

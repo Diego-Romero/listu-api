@@ -1,7 +1,7 @@
 import { CREATED, OK } from 'http-status';
 import supertest from 'supertest';
 import app from '../../app';
-import setupDB from '../../loaders/test-setup';
+import setupDB, { getAuthCookie } from '../../loaders/test-setup';
 import SeedingService from '../../services/seedingService/seedingService';
 import { seedingUserEmail, seedingUserPassword } from '../../services/seedingService/user.seed';
 const request = supertest(app);
@@ -34,25 +34,15 @@ describe('User controller', () => {
   });
 
   test('logs out', async (done) => {
-    await seedingService.seedUsers();
-    await request.post(`/user/login`).send({
-      email: seedingUserEmail,
-      password: seedingUserPassword,
-    });
-    const response = await request.post(`/user/logout`);
+    const cookie = await getAuthCookie(request);
+    const response = await request.post(`/user/logout`).set('cookie', cookie);
     expect(response.status).toBe(OK);
     done();
   });
 
   test('me', async (done) => {
-    await seedingService.seedUsers();
-    const loginRes = await request.post(`/user/login`).send({
-      email: seedingUserEmail,
-      password: seedingUserPassword,
-    });
-    const cookie = loginRes.headers['set-cookie'];
+    const cookie = await getAuthCookie(request);
     const response = await request.get(`/user/me`).set('cookie', cookie);
-    // todo: test should also check that it returns user in the body
     expect(response.status).toBe(OK);
     done();
   });

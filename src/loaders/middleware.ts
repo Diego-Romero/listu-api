@@ -13,7 +13,8 @@ export function setMiddleWare(app: Express): void {
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: false,
+      secure: false, // if set to true tests won't work
+      maxAge: 10 * 60 * 1000 * 100000,
     },
   };
 
@@ -22,6 +23,7 @@ export function setMiddleWare(app: Express): void {
     sessionConfig.cookie.secure = true; // serve secure cookies
   }
 
+  app.use(cookieParser());
   app.use(
     cors({
       origin: config.clientUrl,
@@ -32,7 +34,6 @@ export function setMiddleWare(app: Express): void {
   app.use(session(sessionConfig)); // sessions has to go before passport sessions
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
-  app.use(cookieParser());
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(morgan('dev'));

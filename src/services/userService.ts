@@ -10,13 +10,12 @@ export async function hashPassword(password: string): Promise<string> {
 class UserService {
   async register(user: UserSignUpDto): Promise<User> {
     const password = await hashPassword(user.password);
-    const userRecord = await UserModel.create({ ...user, password });
+    const userRecord = await UserModel.create({ ...user, password, lists: [] });
     return userRecord;
   }
 
   async getUser(userId: string): Promise<User> {
-    const userRecord = await UserModel.findById(userId);
-    console.log(userId, userRecord);
+    const userRecord = await UserModel.findById(userId).populate('lists');
     if (userRecord === null) throw new Error('User does not exists');
     return userRecord;
   }

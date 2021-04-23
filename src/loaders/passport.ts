@@ -6,7 +6,6 @@ import UserModel, { User } from '../models/userModel';
 passport.use(
   new LocalStrategy({ usernameField: 'email' }, async (username, password, done) => {
     const user = await UserModel.findOne({ email: username });
-    console.log('authenticating user with passport', user)
     if (!user) {
       return done(null, false, {
         message: 'unable to authenticate with those details',

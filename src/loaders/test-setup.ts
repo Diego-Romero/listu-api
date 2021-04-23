@@ -1,5 +1,8 @@
 // test-setup.js
 import mongoose from 'mongoose';
+import supertest from 'supertest';
+import SeedingService from '../services/seedingService/seedingService';
+import { seedingUserEmail, seedingUserPassword } from '../services/seedingService/user.seed';
 
 export async function removeAllCollections(): Promise<void> {
   const collections = Object.keys(mongoose.connection.collections);
@@ -26,10 +29,22 @@ export async function dropAllCollections(): Promise<void> {
   }
 }
 
+export async function getAuthCookie(request: supertest.SuperTest<supertest.Test>): Promise<string> {
+  const seedingService = new SeedingService();
+  await seedingService.seedUsers();
+  const loginRes = await request.post(`/user/login`).send({
+    email: seedingUserEmail,
+    password: seedingUserPassword,
+  });
+  const setCookieString = loginRes.headers['set-cookie'];
+
+  return setCookieString;
+}
+
 function setupDB(databaseName: string): void {
   let connection;
   beforeAll(async () => {
-    const url = `mongodb://localhost/deepflow-test-${databaseName}`;
+    const url = `mongodb://localhost/listu-test-${databaseName}`;
     connection = mongoose.createConnection(url, {
       useNewUrlParser: true,
       useCreateIndex: true,
