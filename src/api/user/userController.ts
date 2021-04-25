@@ -46,6 +46,7 @@ userRouter.post('/logout', async (req, res) => {
 });
 
 userRouter.get('/me', isAuthenticated, async (req, res) => {
+  res.cookie('cookieName', 'cookieValue');
   try {
     const { user } = req;
     const expressUser = user as User;
