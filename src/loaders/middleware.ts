@@ -15,7 +15,7 @@ export function setMiddleWare(app: Express): void {
     cookie: {
       secure: false, // if set to true tests won't work
       maxAge: 10 * 60 * 1000 * 100000,
-      sameSite: true,
+      sameSite: 'none',
     },
   };
 
@@ -32,6 +32,7 @@ export function setMiddleWare(app: Express): void {
       credentials: true,
     }),
   );
+  // @ts-ignore
   app.use(session(sessionConfig)); // sessions has to go before passport sessions
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
