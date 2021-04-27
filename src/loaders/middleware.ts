@@ -15,9 +15,13 @@ export function setMiddleWare(app: Express): void {
     cookie: {
       secure: false, // if set to true tests won't work
       maxAge: 10 * 60 * 1000 * 100000,
-      sameSite: config.env === 'production' ? 'none' : false,
+      sameSite: 'none',
     },
   };
+
+  // if (config.env === 'development') {
+  //   sessionConfig.cookie.sameSite = false;
+  // }
 
   if (app.get('env') === 'production') {
     app.set('trust proxy', 1); // trust first proxy
