@@ -48,8 +48,11 @@ export function setMiddleWare(app: Express): void {
       credentials: true,
     }),
   );
+
+  const sessionConfig = config.env === 'production' ? prodSessionConfig : devSessionConfig;
+  // console.log('session config', sessionConfig);
   // @ts-ignore
-  app.use(session(config.env === 'prod' ? prodSessionConfig : devSessionConfig)); // sessions has to go before passport sessions
+  app.use(session(sessionConfig)); // sessions has to go before passport sessions
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(passport.initialize());
