@@ -8,24 +8,36 @@ import config from '../config/config';
 import cors from 'cors';
 
 export function setMiddleWare(app: Express): void {
-  const sessionConfig = {
+  const sharedCookieConfig = {
+    maxAge: 10 * 60 * 1000 * 100000,
+  };
+  const sharedSessionConfig = {
     secret: config.sessionSecret || '',
     resave: false,
     saveUninitialized: true,
+    cookie: sharedCookieConfig,
+  };
+
+  const devSessionConfig = {
+    ...sharedSessionConfig,
     cookie: {
-      secure: false, // if set to true tests won't work
-      maxAge: 10 * 60 * 1000 * 100000,
+      ...sharedCookieConfig,
+      secure: false,
+      sameSite: false,
+    },
+  };
+
+  const prodSessionConfig = {
+    ...sharedSessionConfig,
+    cookie: {
+      ...sharedCookieConfig,
+      secure: true,
       sameSite: 'none',
     },
   };
 
-  // if (config.env === 'development') {
-  //   sessionConfig.cookie.sameSite = false;
-  // }
-
   if (app.get('env') === 'production') {
     app.set('trust proxy', 1); // trust first proxy
-    sessionConfig.cookie.secure = true; // serve secure cookies
   }
 
   app.use(cookieParser());
@@ -37,7 +49,7 @@ export function setMiddleWare(app: Express): void {
     }),
   );
   // @ts-ignore
-  app.use(session(sessionConfig)); // sessions has to go before passport sessions
+  app.use(session(config.env === 'prod' ? prodSessionConfig : devSessionConfig)); // sessions has to go before passport sessions
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(passport.initialize());
