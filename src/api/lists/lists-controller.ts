@@ -49,7 +49,7 @@ listRouter.delete('/:listId', isAuthenticated, async (req, res) => {
   const expressUser = user as User;
   try {
     const listRecord = await listService.getListById(listId);
-    console.log(listRecord)
+    console.log(listRecord);
     if (listRecord === null || !listRecord)
       return res.status(NOT_FOUND).json({ message: 'List not found.' });
     const createdById = listRecord.createdBy?._id;

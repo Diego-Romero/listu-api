@@ -22,7 +22,12 @@ class UserService {
   }
 
   async getUser(userId: string): Promise<User | null> {
-    const userRecord = await UserModel.findById(userId).populate('lists');
+    const userRecord = await UserModel.findById(userId).populate({
+      path: 'lists',
+      populate: {
+        path: 'createdBy',
+      }
+    });
     return userRecord;
   }
 
