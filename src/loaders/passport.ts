@@ -11,7 +11,7 @@ passport.use(
         message: 'unable to authenticate with those details',
       });
     }
-    if (!(await bcrypt.compare(password, user.password))) {
+    if (!(await bcrypt.compare(password, user.password as string))) {
       return done(null, false, { message: 'Incorrect password.' });
     }
     return done(null, user);

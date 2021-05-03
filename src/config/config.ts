@@ -5,6 +5,7 @@ interface Config {
   saltRounds: number;
   dbConnection: string | undefined;
   clientUrl: string | undefined;
+  sendGridApiKey: string | undefined;
 }
 
 const config: Config = {
@@ -14,6 +15,7 @@ const config: Config = {
   dbConnection: process.env.DB_CONNECTION,
   clientUrl: process.env.CLIENT_URL,
   saltRounds: process.env.NODE_ENV === 'production' ? 12 : 1,
+  sendGridApiKey: process.env.SENDGRID_API_KEY,
 };
 
 if (config.env !== 'test') console.log('config', config);

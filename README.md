@@ -1,9 +1,40 @@
+# Listu Api
 
+## Running in dev mode
 
 ### Adding env variables
-- Update nodemon.config file with the needed files
-- To test a build, create a .env file and follow the example from .env.example
 
+- create nodemon.config file with the needed env vars
+
+```json
+{
+  "restartable": "rs",
+  "ignore": [".git", "node_modules/", "dist/", "coverage/"],
+  "watch": ["src/"],
+  "execMap": {
+    "ts": "node -r ts-node/register"
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "PORT": "8080",
+    "SESSION_SECRET": "keyboard cat",
+    "DB_CONNECTION": "mongodb://localhost/listu",
+    "CLIENT_URL": "http://localhost:3000",
+    "SENDGRID_API_KEY": ""
+  },
+  "ext": "js,json,ts"
+}
+```
+
+## Running in production mode
+
+For this you will need to create a .env file following the same conventions as .env.example
+
+Then you can run
+
+```bash
+yarn run build && yarn start
+```
 
 ### Folder Structure
 

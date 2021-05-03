@@ -2,6 +2,7 @@ import UserModel, { User } from '../models/userModel';
 import bcrypt from 'bcrypt';
 import config from '../config/config';
 import UserSignUpDto from '../dto/user/userSignUpDto';
+import { List } from '../models/list-model';
 
 export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, config.saltRounds);
@@ -14,10 +15,25 @@ class UserService {
     return userRecord;
   }
 
-  async getUser(userId: string): Promise<User> {
-    const userRecord = await UserModel.findById(userId).populate('lists');
-    if (userRecord === null) throw new Error('User does not exists');
+  async createUserFromEmail(email: string): Promise<User> {
+    let userRecord = await UserModel.create({ email, lists: [], name: '' });
+    userRecord = await userRecord.populate('lists').execPopulate();
     return userRecord;
+  }
+
+  async getUser(userId: string): Promise<User | null> {
+    const userRecord = await UserModel.findById(userId).populate('lists');
+    return userRecord;
+  }
+
+  async getUserFromEmail(email: string): Promise<User | null> {
+    const userRecord = await UserModel.findOne({ email }).populate('lists');
+    return userRecord;
+  }
+
+  async addListToUserLists(listRecord: List, userRecord: User): Promise<void> {
+    userRecord.lists.push(listRecord);
+    await userRecord.save();
   }
 }
 

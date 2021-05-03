@@ -4,7 +4,7 @@ import { List } from './list-model';
 export interface User extends Document {
   email: string;
   name: string;
-  password: string;
+  password?: string;
   lists: List[];
 }
 
@@ -12,8 +12,6 @@ const schema = new mongoose.Schema<User>(
   {
     name: {
       type: String,
-      required: true,
-      minlength: 2,
       maxlength: 100,
     },
     email: {
@@ -25,8 +23,6 @@ const schema = new mongoose.Schema<User>(
     },
     password: {
       type: String,
-      required: true,
-      minlength: 4,
       maxlength: 100,
     },
     lists: [

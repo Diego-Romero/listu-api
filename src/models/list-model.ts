@@ -1,12 +1,13 @@
 import mongoose, { Document } from 'mongoose';
 import { ListItem } from './item-model';
+import { User } from './userModel';
 
 export interface List extends Document {
   description?: string;
   name: string;
   items: ListItem[];
-  users?: string[];
-  createdBy?: string;
+  users: User[];
+  createdBy?: User;
 }
 
 const schema = new mongoose.Schema(
@@ -19,8 +20,6 @@ const schema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
-      minlength: 2,
       maxlength: 1000,
     },
     createdBy: {

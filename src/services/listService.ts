@@ -8,7 +8,7 @@ interface CreateListValues {
 }
 class ListService {
   async getListById(id: string): Promise<List | null> {
-    return await ListModel.findById(id).populate('users').populate('items');
+    return await ListModel.findById(id).populate('users').populate('items').populate('createdBy');
   }
 
   async getListItemById(id: string): Promise<ListItem | null> {
@@ -44,6 +44,22 @@ class ListService {
     await ListItemModel.findByIdAndRemove(itemId);
     const list = await ListModel.findByIdAndUpdate(listId, { $pull: { items: itemId } });
     return list;
+  }
+
+  async deleteList(listId: string): Promise<void> {
+    // need to remove the list from all the users
+    const listRecord = (await ListModel.findById(listId).populate('users')) as List;
+    for (const userInList of listRecord.users) {
+      await UserModel.findByIdAndUpdate(userInList._id, {
+        $pull: { lists: listId },
+      });
+    }
+    await ListModel.findByIdAndDelete(listId);
+  }
+
+  async addUserToList(listRecord: List, userRecord: User): Promise<void> {
+    listRecord.users.push(userRecord._id);
+    await listRecord.save();
   }
 }
 
