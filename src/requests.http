@@ -20,6 +20,15 @@ Content-Type: application/json
     "email": "user@mail.com"
 }
 
+### register buddy once invited
+POST http://localhost:8080/user/friend/register/60907ee3821daa2ab806a4b6 HTTP/1.1
+Content-Type: application/json
+
+{ 
+    "name": "diego",
+    "password": "password"
+}
+
 ### me
 GET http://localhost:8080/user/me HTTP/1.1
 

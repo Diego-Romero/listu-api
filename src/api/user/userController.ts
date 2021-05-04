@@ -11,6 +11,7 @@ import { User } from '../../models/userModel';
 import InviteFriendDto from '../../dto/user/inviteFriendDto';
 import ListService from '../../services/listService';
 import { EmailService } from '../../services/emailService';
+import RegisterFriendDTO from '../../dto/user/registerFriendDto';
 
 const userRouter = express.Router();
 const userService = new UserService();
@@ -26,6 +27,33 @@ userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res, next) 
     });
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({ message: 'Email already exists' });
+  }
+});
+
+userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (req, res, next) => {
+  const id = req.params.id;
+  console.log(id, req.body);
+  try {
+    const user = await userService.getUser(id);
+    console.log(user);
+    if (user === null)
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: `Friend with this email has not been invited yet.` });
+
+    if (user.password && user.password.length > 0)
+      return res.status(BAD_REQUEST).json({ message: 'User has already been registered' });
+
+    const updatedUser = await userService.registerFriend(req.body, id);
+    req.login(updatedUser, function (err) {
+      if (err) return next(err);
+      return res.status(status.CREATED).json(filterUserInReq(updatedUser as User));
+    });
+  } catch (e) {
+    return res.status(status.BAD_REQUEST).json({
+      message: 'There has been an error creating this user, please try again later.',
+      error: e.toString(),
+    });
   }
 });
 
