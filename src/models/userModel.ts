@@ -6,6 +6,7 @@ export interface User extends Document {
   name: string;
   password?: string;
   lists: List[];
+  resetPasswordToken?: string;
 }
 
 const schema = new mongoose.Schema<User>(
@@ -24,6 +25,11 @@ const schema = new mongoose.Schema<User>(
     password: {
       type: String,
       maxlength: 100,
+    },
+    resetPasswordToken: {
+      type: String,
+      required: false,
+      default: '',
     },
     lists: [
       {

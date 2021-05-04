@@ -71,3 +71,11 @@ Content-Type: application/json
 
 ### delete list item
 DELETE http://localhost:8080/lists/6081ea592e6f5366964b7efc/608761454e1df17f1a1a141b HTTP/1.1
+
+### forgot password
+POST http://localhost:8080/user/forgot-password HTTP/1.1
+content-type: application/json
+
+{
+    "email": "dev.diego.romero@gmail.com"
+}

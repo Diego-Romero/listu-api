@@ -12,6 +12,8 @@ import InviteFriendDto from '../../dto/user/inviteFriendDto';
 import ListService from '../../services/listService';
 import { EmailService } from '../../services/emailService';
 import RegisterFriendDTO from '../../dto/user/registerFriendDto';
+import ForgotPasswordDto from '../../dto/user/forgot-password-dto';
+import crypto from 'crypto';
 
 const userRouter = express.Router();
 const userService = new UserService();
@@ -27,6 +29,32 @@ userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res, next) 
     });
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({ message: 'Email already exists' });
+  }
+});
+
+userRouter.post(`/forgot-password`, validateDTO(ForgotPasswordDto), async (req, res) => {
+  try {
+    const user = await userService.getUserFromEmail(req.body.email);
+    if (user === null) return res.status(NOT_FOUND).json({ message: 'User not found' });
+    crypto.randomBytes(20, async (err, buf) => {
+      if (err)
+        return res
+          .status(INTERNAL_SERVER_ERROR)
+          .json({ message: 'There has been an error with your request, please try again later.' });
+      const token: string = buf.toString('hex');
+      user.resetPasswordToken = token;
+      await user.save();
+      await emailService.sendResetPasswordEmail(user.email, token);
+      // send email as wel
+      return res.status(200).json({
+        message: 'Please check your email with further instructions on how to reset your password.',
+      });
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: 'There has been an error with your request, please try again later.',
+      error: error.toString(),
+    });
   }
 });
 
