@@ -14,6 +14,7 @@ import { EmailService } from '../../services/emailService';
 import RegisterFriendDTO from '../../dto/user/registerFriendDto';
 import ForgotPasswordDto from '../../dto/user/forgot-password-dto';
 import crypto from 'crypto';
+import ResetPasswordDto from '../../dto/user/resetPasswordDto';
 
 const userRouter = express.Router();
 const userService = new UserService();
@@ -56,6 +57,18 @@ userRouter.post(`/forgot-password`, validateDTO(ForgotPasswordDto), async (req, 
       error: error.toString(),
     });
   }
+});
+
+userRouter.post('/reset-password/:token', validateDTO(ResetPasswordDto), async (req, res) => {
+  const token = req.params.token;
+  const user = await userService.getUserByPasswordResetToken(token);
+  if (user === null)
+    return res
+      .status(BAD_REQUEST)
+      .json({ message: 'Token is invalid, try to reset the password again.' });
+
+  await userService.resetUserPassword(req.body.password, user._id);
+  res.status(OK).json({ message: 'New password has been set, you can now log in.' });
 });
 
 userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (req, res, next) => {

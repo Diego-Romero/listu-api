@@ -46,6 +46,20 @@ class UserService {
     return userRecord;
   }
 
+  async resetUserPassword(newPassword: string, userId: string): Promise<User> {
+    const userRecord = (await UserModel.findById(userId)) as User;
+    const password = await hashPassword(newPassword);
+    userRecord.password = password;
+    userRecord.resetPasswordToken = '';
+    await userRecord.save();
+    return userRecord;
+  }
+
+  async getUserByPasswordResetToken(token: string): Promise<User | null> {
+    const userRecord = await UserModel.findOne({ resetPasswordToken: token }).populate('lists');
+    return userRecord;
+  }
+
   async addListToUserLists(listRecord: List, userRecord: User): Promise<void> {
     userRecord.lists.push(listRecord);
     await userRecord.save();

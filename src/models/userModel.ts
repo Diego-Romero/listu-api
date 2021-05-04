@@ -9,7 +9,7 @@ export interface User extends Document {
   resetPasswordToken?: string;
 }
 
-const schema = new mongoose.Schema<User>(
+const userSchema = new mongoose.Schema<User>(
   {
     name: {
       type: String,
@@ -41,6 +41,6 @@ const schema = new mongoose.Schema<User>(
   { timestamps: true },
 );
 
-const UserModel = mongoose.model<User>('User', schema);
+const UserModel = mongoose.model<User>('User', userSchema);
 
 export default UserModel;
