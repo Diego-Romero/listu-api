@@ -5,8 +5,7 @@ import UserService from '../../services/userService';
 import UserSignUpDto from '../../dto/user/userSignUpDto';
 import validateDTO from '../../middleware/validateDto';
 import UserLoginDto from '../../dto/user/userLoginDto';
-import { isAuthenticated } from '../../middleware/isAuthenticated';
-import { filterUserInReq } from '../../utils';
+import { FilteredUser, filterUserInReq } from '../../utils';
 import { User } from '../../models/userModel';
 import InviteFriendDto from '../../dto/user/inviteFriendDto';
 import ListService from '../../services/listService';
@@ -14,7 +13,9 @@ import { EmailService } from '../../services/emailService';
 import RegisterFriendDTO from '../../dto/user/registerFriendDto';
 import ForgotPasswordDto from '../../dto/user/forgot-password-dto';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import ResetPasswordDto from '../../dto/user/resetPasswordDto';
+import config from '../../config/config';
 
 const userRouter = express.Router();
 const userService = new UserService();
@@ -98,33 +99,31 @@ userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (r
   }
 });
 
-userRouter.post(
-  '/login',
-  validateDTO(UserLoginDto),
-  passport.authenticate('local'),
-  async (req, res) => {
-    try {
-      const { user } = req;
-      const expressUser = user as User;
-      const userRecord = await userService.getUser(expressUser._id);
-      if (userRecord === null) res.status(NOT_FOUND).json({ message: 'User not found' });
-      else res.status(status.OK).json(filterUserInReq(userRecord));
-    } catch (e) {
-      return res.status(status.BAD_REQUEST).json({ message: e.toString() });
-    }
-  },
-);
+userRouter.post('/login', validateDTO(UserLoginDto), async (req, res) => {
+  passport.authenticate('local', { session: false }, (err, user) => {
+    if (err || !user) return res.status(BAD_REQUEST).json({ message: 'User not found' });
+    req.login(user, { session: false }, async (loginError) => {
+      if (loginError)
+        return res
+          .status(BAD_REQUEST)
+          .json({ message: 'Unable to authenticate with those details' });
+
+      const filteredUser: FilteredUser = filterUserInReq(user);
+      const token = jwt.sign(filteredUser, config.jwtSecret as string);
+      return res.status(OK).json({ token, user: filteredUser });
+    });
+  })(req, res);
+});
 
 userRouter.post('/logout', async (req, res) => {
   req.logout();
   res.sendStatus(status.OK);
 });
 
-userRouter.get('/me', isAuthenticated, async (req, res) => {
+userRouter.get('/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { user } = req;
-    const expressUser = user as User;
-    const userRecord = await userService.getUser(expressUser._id);
+    const user = req.user as FilteredUser;
+    const userRecord = await userService.getUser(user._id);
     if (userRecord === null) res.status(NOT_FOUND).json({ message: 'User not found' });
     else {
       res.status(status.OK).json(filterUserInReq(userRecord));
@@ -136,7 +135,7 @@ userRouter.get('/me', isAuthenticated, async (req, res) => {
 
 userRouter.post(
   '/friend/:listId',
-  isAuthenticated,
+  passport.authenticate('jwt', { session: false }),
   validateDTO(InviteFriendDto),
   async (req, res) => {
     const listId = req.params.listId;

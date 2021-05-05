@@ -1,6 +1,7 @@
 import ListItemModel, { ListItem } from '../models/item-model';
 import ListModel, { List } from '../models/list-model';
 import UserModel, { User } from '../models/userModel';
+import { FilteredUser } from '../utils';
 
 interface CreateListValues {
   name: string;
@@ -15,11 +16,10 @@ class ListService {
     return await ListItemModel.findById(id).populate('createdBy');
   }
 
-  async createList(values: CreateListValues, user: User): Promise<List> {
-    const userId = user._id;
-    const listValues = { createdBy: user._id, users: [user._id], ...values, items: [] };
+  async createList(values: CreateListValues, user: FilteredUser): Promise<List> {
+    const userRecord = (await UserModel.findById(user._id)) as User;
+    const listValues = { createdBy: userRecord._id, users: [userRecord._id], ...values, items: [] };
     const newList = await ListModel.create(listValues);
-    const userRecord = await UserModel.findById(userId);
     if (userRecord !== null) {
       userRecord.lists.push(newList._id);
       await userRecord.save();

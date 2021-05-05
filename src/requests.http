@@ -31,6 +31,7 @@ Content-Type: application/json
 
 ### me
 GET http://localhost:8080/user/me HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRGllZ28iLCJlbWFpbCI6InVzZXJAbWFpbC5jb20iLCJjcmVhdGVkQXQiOiIyMDIxLTA1LTAyVDIzOjQ4OjE1LjM3NFoiLCJsaXN0cyI6WyI2MDkwNzIzYWE3MGZjYzIxNzJmMGNhM2UiLCI2MDkxODA4Njc2ZjJhOTViZTJhYWUwM2YiXSwiX2lkIjoiNjA4ZjNhM2Y5OTY4YWYxM2E1OWFkYzQwIiwiaWF0IjoxNjIwMTc0NzUxfQ.EfgiBGLGhTKqBokhNGuAedqNF2YnRt5Lx1wmQRmkv5s
 
 ### logout
 POST http://localhost:8080/user/logout HTTP/1.1

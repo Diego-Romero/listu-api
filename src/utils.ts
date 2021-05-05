@@ -1,9 +1,10 @@
 import { pick } from 'ramda';
 import { User } from './models/userModel';
 
-interface FilteredUser {
+export interface FilteredUser {
   name: string;
   email: string;
+  _id: string;
 }
 
 export function filterUserInReq(user: User): FilteredUser {

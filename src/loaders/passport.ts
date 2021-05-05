@@ -2,6 +2,8 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcrypt';
 import UserModel, { User } from '../models/userModel';
+import passportJWT from 'passport-jwt';
+import config from '../config/config';
 
 passport.use(
   new LocalStrategy({ usernameField: 'email' }, async (username, password, done) => {
@@ -16,6 +18,18 @@ passport.use(
     }
     return done(null, user);
   }),
+);
+
+passport.use(
+  new passportJWT.Strategy(
+    {
+      jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: config.jwtSecret as string,
+    },
+    (jwtPayload, done) => {
+      return done(null, jwtPayload);
+    },
+  ),
 );
 
 passport.serializeUser((user, done) => {
