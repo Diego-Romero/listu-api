@@ -22,13 +22,10 @@ const userService = new UserService();
 const listService = new ListService();
 const emailService = new EmailService();
 
-userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res, next) => {
+userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res) => {
   try {
     const user = await userService.register(req.body);
-    req.login(user, function (err) {
-      if (err) return next(err);
-      return res.status(status.CREATED).json(filterUserInReq(user as User));
-    });
+    return res.status(status.CREATED).json(filterUserInReq(user as User));
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({ message: 'Email already exists' });
   }
@@ -72,12 +69,10 @@ userRouter.post('/reset-password/:token', validateDTO(ResetPasswordDto), async (
   res.status(OK).json({ message: 'New password has been set, you can now log in.' });
 });
 
-userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (req, res, next) => {
+userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (req, res) => {
   const id = req.params.id;
-  console.log(id, req.body);
   try {
     const user = await userService.getUser(id);
-    console.log(user);
     if (user === null)
       return res
         .status(BAD_REQUEST)
@@ -87,10 +82,7 @@ userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (r
       return res.status(BAD_REQUEST).json({ message: 'User has already been registered' });
 
     const updatedUser = await userService.registerFriend(req.body, id);
-    req.login(updatedUser, function (err) {
-      if (err) return next(err);
-      return res.status(status.CREATED).json(filterUserInReq(updatedUser as User));
-    });
+    return res.status(status.CREATED).json(filterUserInReq(updatedUser as User));
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({
       message: 'There has been an error creating this user, please try again later.',
