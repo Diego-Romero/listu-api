@@ -10,13 +10,13 @@ passport.use(
     const user = await UserModel.findOne({ email: username });
     if (!user) {
       return done(null, false, {
-        message: 'unable to authenticate with those details',
+        message: 'Could not find a user with those details',
       });
     }
     if (!(await bcrypt.compare(password, user.password as string))) {
       return done(null, false, { message: 'Incorrect password.' });
     }
-    return done(null, user);
+    return done(null, user, { message: 'Authentication succeeded' });
   }),
 );
 

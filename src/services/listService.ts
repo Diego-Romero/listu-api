@@ -1,4 +1,4 @@
-import ListItemModel, { ListItem } from '../models/item-model';
+import ListItemModel, { ListItem } from '../models/ListItemModel';
 import ListModel, { List } from '../models/list-model';
 import UserModel, { User } from '../models/userModel';
 import { FilteredUser } from '../utils';
@@ -9,7 +9,15 @@ interface CreateListValues {
 }
 class ListService {
   async getListById(id: string): Promise<List | null> {
-    return await ListModel.findById(id).populate('users').populate('items').populate('createdBy');
+    return await ListModel.findById(id)
+      .populate('users')
+      .populate({
+        path: 'items',
+        populate: {
+          path: 'createdBy',
+        },
+      })
+      .populate('createdBy');
   }
 
   async getListItemById(id: string): Promise<ListItem | null> {

@@ -92,8 +92,8 @@ userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (r
 });
 
 userRouter.post('/login', validateDTO(UserLoginDto), async (req, res) => {
-  passport.authenticate('local', { session: false }, (err, user) => {
-    if (err || !user) return res.status(BAD_REQUEST).json({ message: 'User not found' });
+  passport.authenticate('local', { session: false }, (err, user, { message }) => {
+    if (err !== null || !user) return res.status(BAD_REQUEST).json({ message });
     req.login(user, { session: false }, async (loginError) => {
       if (loginError)
         return res

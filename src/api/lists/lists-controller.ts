@@ -51,7 +51,7 @@ listRouter.delete(
     try {
       await listService.deleteListItem(listId, itemId);
       const updatedList = await listService.getListById(listId);
-      return res.status(OK).json({ message: 'Item marked as completed', list: updatedList });
+      return res.status(OK).json({ message: 'List item deleted', list: updatedList });
     } catch (err) {
       return res.status(BAD_REQUEST).json({ message: err.toString() });
     }
@@ -67,7 +67,6 @@ listRouter.delete(
     const expressUser = user as User;
     try {
       const listRecord = await listService.getListById(listId);
-      console.log(listRecord);
       if (listRecord === null || !listRecord)
         return res.status(NOT_FOUND).json({ message: 'List not found.' });
       const createdById = listRecord.createdBy?._id;

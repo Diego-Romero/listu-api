@@ -1,5 +1,5 @@
 import mongoose, { Document } from 'mongoose';
-import { ListItem } from './item-model';
+import { ListItem } from './ListItemModel';
 import { User } from './userModel';
 
 export interface List extends Document {
