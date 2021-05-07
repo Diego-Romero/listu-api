@@ -98,6 +98,22 @@ listRouter.get('/:id', passport.authenticate('jwt', { session: false }), async (
   }
 });
 
+listRouter.get(
+  '/list-item/:id',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const listItem = await listService.getListItemById(id);
+      if (listItem === null)
+        return res.status(BAD_REQUEST).json({ message: 'List-Item does not exist' });
+      return res.status(OK).json(listItem);
+    } catch (err) {
+      return res.status(BAD_REQUEST).json({ message: err.toString() });
+    }
+  },
+);
+
 listRouter.post(
   `/:listId/done/:itemId`,
   passport.authenticate('jwt', { session: false }),
