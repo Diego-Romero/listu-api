@@ -98,7 +98,7 @@ listRouter.get('/:id', passport.authenticate('jwt', { session: false }), async (
   }
 });
 
-listRouter.patch(
+listRouter.post(
   `/:listId/done/:itemId`,
   passport.authenticate('jwt', { session: false }),
   validateDTO(UpdateListItemDto),
@@ -107,9 +107,9 @@ listRouter.patch(
       const itemId = req.params.itemId;
       const listItem = req.body as ListItem;
       const updatedItem = await listService.updateListItem(itemId, listItem);
-      res.status(OK).json(updatedItem);
+      return res.status(OK).json(updatedItem);
     } catch (e) {
-      res
+      return res
         .status(BAD_REQUEST)
         .json({ message: `There has been an error updating your list item`, error: e.toString() });
     }
