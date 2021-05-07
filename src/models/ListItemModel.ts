@@ -1,8 +1,11 @@
 import mongoose, { Document } from 'mongoose';
+import { User } from './userModel';
 
 export interface ListItem extends Document {
   description: string;
   name: string;
+  done: boolean;
+  dateCompleted?: Date;
 }
 
 const schema = new mongoose.Schema(

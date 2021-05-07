@@ -44,7 +44,7 @@ export function setMiddleWare(app: Express): void {
   app.use(
     cors({
       origin: config.clientUrl,
-      methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
+      methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE', 'PATCH'],
       credentials: true,
     }),
   );

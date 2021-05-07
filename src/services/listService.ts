@@ -20,6 +20,15 @@ class ListService {
       .populate('createdBy');
   }
 
+  separateListItems(list: List): { done: ListItem[]; undone: ListItem[] } {
+    const done: ListItem[] = [];
+    const undone: ListItem[] = [];
+
+    for (const item of list.items) item.done ? done.push(item) : undone.push(item);
+
+    return { done, undone };
+  }
+
   async getListItemById(id: string): Promise<ListItem | null> {
     return await ListItemModel.findById(id).populate('createdBy');
   }
@@ -39,7 +48,7 @@ class ListService {
     const listRecord = await ListModel.findById(listId);
     if (listRecord !== null) {
       const userId = user._id;
-      const itemValues = { createdBy: userId, ...values };
+      const itemValues = { createdBy: userId, ...values, done: false };
       const newListItem = await ListItemModel.create(itemValues);
       listRecord.items.push(newListItem._id);
       await listRecord.save();
@@ -52,6 +61,15 @@ class ListService {
     await ListItemModel.findByIdAndRemove(itemId);
     const list = await ListModel.findByIdAndUpdate(listId, { $pull: { items: itemId } });
     return list;
+  }
+
+  async updateListItem(listItemId: string, listItem: ListItem): Promise<ListItem> {
+    const listItemRecord = (await ListItemModel.findById(listItemId)) as ListItem;
+    listItemRecord.name = listItem.name;
+    listItemRecord.done = listItem.done;
+    listItemRecord.description = listItem.description;
+    await listItemRecord.save();
+    return listItemRecord;
   }
 
   async deleteList(listId: string): Promise<void> {

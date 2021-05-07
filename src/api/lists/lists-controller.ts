@@ -7,6 +7,8 @@ import validateDTO from '../../middleware/validateDto';
 import { User } from '../../models/userModel';
 import ListService from '../../services/listService';
 import { FilteredUser } from '../../utils';
+import UpdateListItemDto from '../../dto/user/updateListItemDto';
+import { ListItem } from '../../models/ListItemModel';
 
 const listRouter = express.Router();
 const listService = new ListService();
@@ -87,10 +89,31 @@ listRouter.get('/:id', passport.authenticate('jwt', { session: false }), async (
   const id = req.params.id;
   try {
     const listRecord = await listService.getListById(id);
-    return res.status(OK).json(listRecord);
+    if (listRecord === null)
+      return res.status(BAD_REQUEST).json({ message: 'List does not exist' });
+    const { done, undone } = listService.separateListItems(listRecord);
+    return res.status(OK).json({ list: listRecord, done, undone });
   } catch (err) {
     return res.status(BAD_REQUEST).json({ message: err.toString() });
   }
 });
+
+listRouter.patch(
+  `/:listId/done/:itemId`,
+  passport.authenticate('jwt', { session: false }),
+  validateDTO(UpdateListItemDto),
+  async (req, res) => {
+    try {
+      const itemId = req.params.itemId;
+      const listItem = req.body as ListItem;
+      const updatedItem = await listService.updateListItem(itemId, listItem);
+      res.status(OK).json(updatedItem);
+    } catch (e) {
+      res
+        .status(BAD_REQUEST)
+        .json({ message: `There has been an error updating your list item`, error: e.toString() });
+    }
+  },
+);
 
 export default listRouter;
