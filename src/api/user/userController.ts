@@ -16,11 +16,26 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import ResetPasswordDto from '../../dto/user/resetPasswordDto';
 import config from '../../config/config';
+import ContactDto from '../../dto/user/contactDto';
 
 const userRouter = express.Router();
 const userService = new UserService();
 const listService = new ListService();
 const emailService = new EmailService();
+
+userRouter.post(`/contact`, validateDTO(ContactDto), async (req, res) => {
+  const { message, email } = req.body;
+  try {
+    await emailService.sendContactMessageEmail(message, email);
+    return res.sendStatus(OK);
+  } catch (e) {
+    console.log(e, e.response.body.errors)
+    return res.status(status.BAD_REQUEST).json({
+      message: 'There has been an error sending the contact message, please try again later',
+      error: e.response.body.errors,
+    });
+  }
+});
 
 userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res) => {
   try {
