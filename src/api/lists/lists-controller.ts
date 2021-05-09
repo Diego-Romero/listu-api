@@ -72,7 +72,6 @@ listRouter.delete(
       if (listRecord === null || !listRecord)
         return res.status(NOT_FOUND).json({ message: 'List not found.' });
       const createdById = listRecord.createdBy?._id;
-      console.log(createdById, typeof createdById);
       if (createdById.toString() !== expressUser._id)
         return res
           .status(BAD_REQUEST)

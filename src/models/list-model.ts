@@ -8,6 +8,8 @@ export interface List extends Document {
   items: ListItem[];
   users: User[];
   createdBy?: User;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const schema = new mongoose.Schema(

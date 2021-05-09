@@ -37,6 +37,7 @@ class UserService {
       populate: {
         path: 'createdBy',
       },
+      sort: { createdAt: 1 },
     });
     return userRecord;
   }

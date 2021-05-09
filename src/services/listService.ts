@@ -13,6 +13,7 @@ class ListService {
       .populate('users')
       .populate({
         path: 'items',
+        sort: { updatedAt: 'desc' },
         populate: {
           path: 'createdBy',
         },
