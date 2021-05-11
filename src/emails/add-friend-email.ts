@@ -6,11 +6,10 @@ export const addFriendEmail = (email: string, userId: string) => ({
   from: 'listu.hello@gmail.com', // Change to your verified sender
   subject: 'Your friends are inviting you to use Listu!',
   html: `
-    <h3>Your friends want you to come try Listu! </h3>
+    <h4>Your friends want you to come try Listu! </h4>
     <p>
       Please finish registering following this link: ${config.clientUrl}/new-friend/${userId}
     </p>
-
-    <h4>Best, from the Listu team :) </h4>
+    <h5>Best</h5>
   `,
 });

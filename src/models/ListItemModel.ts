@@ -6,6 +6,7 @@ export interface ListItem extends Document {
   name: string;
   done: boolean;
   dateCompleted?: Date;
+  attachmentUrl?: string;
 }
 
 const schema = new mongoose.Schema(
@@ -26,6 +27,10 @@ const schema = new mongoose.Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    attachmentUrl: {
+      type: String,
+      required: false,
     },
     dateCompleted: {
       type: Date,

@@ -9,9 +9,12 @@ import ListService from '../../services/listService';
 import { FilteredUser } from '../../utils';
 import UpdateListItemDto from '../../dto/user/updateListItemDto';
 import { ListItem } from '../../models/ListItemModel';
+import AWS from 'aws-sdk';
+import config from '../../config/config';
 
 const listRouter = express.Router();
 const listService = new ListService();
+const s3 = new AWS.S3();
 
 listRouter.post(
   '/',
@@ -127,6 +130,27 @@ listRouter.post(
       return res
         .status(BAD_REQUEST)
         .json({ message: `There has been an error updating your list item`, error: e.toString() });
+    }
+  },
+);
+
+listRouter.get(
+  `/:listId/:itemId/upload`,
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    const bucketName = `listu-${config.env}`;
+    const expires = 60 * 10;
+    console.log(bucketName);
+    try {
+      const itemId = req.params.itemId;
+      // const url = s3.getSignedUrl('getObject', {
+      // })
+      // const updatedItem = await listService.updateListItem(itemId, listItem);
+      return res.status(OK).json({});
+    } catch (e) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: `There has been an error generating a url for your upload` });
     }
   },
 );

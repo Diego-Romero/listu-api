@@ -19,6 +19,7 @@
     "prettier:check": "prettier --check 'src/**/*.ts'"
   },
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
     "@types/bcrypt": "^3.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.9",
@@ -53,6 +54,7 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.2",
+    "aws-sdk": "^2.904.0",
     "bcrypt": "^5.0.0",
     "class-sanitizer": "^1.0.1",
     "class-transformer": "^0.3.2",
