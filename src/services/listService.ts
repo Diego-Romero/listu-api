@@ -88,6 +88,13 @@ class ListService {
     listRecord.users.push(userRecord._id);
     await listRecord.save();
   }
+
+  async updateListItemAttachmentUrl(id: string, url: string): Promise<ListItem | null> {
+    const listItem = (await ListItemModel.findById(id)) as ListItem;
+    listItem.attachmentUrl = url;
+    listItem.save();
+    return listItem;
+  }
 }
 
 export default ListService;

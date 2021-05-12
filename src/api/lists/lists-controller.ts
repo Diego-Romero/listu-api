@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { BAD_REQUEST, CREATED, NOT_FOUND, OK } from 'http-status';
+import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status';
 import CreateListDto from '../../dto/user/createListDto';
 import CreateListItemDto from '../../dto/user/createListItemDto';
 import validateDTO from '../../middleware/validateDto';
@@ -11,10 +11,12 @@ import UpdateListItemDto from '../../dto/user/updateListItemDto';
 import { ListItem } from '../../models/ListItemModel';
 import AWS from 'aws-sdk';
 import config from '../../config/config';
+import GetS3FileUploadUrlDTO from '../../dto/user/getS3FileUploadUrlDto';
 
 const listRouter = express.Router();
 const listService = new ListService();
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({ signatureVersion: 'v4' });
+const bucketName = `listu-${config.env}`;
 
 listRouter.post(
   '/',
@@ -53,7 +55,21 @@ listRouter.delete(
   async (req, res) => {
     const listId = req.params.listId;
     const itemId = req.params.itemId;
+    const listItem = await listService.getListItemById(itemId);
+    if (listItem === null) {
+      return res.status(BAD_REQUEST).json({ message: 'list item does not exist' });
+    }
     try {
+      if (listItem.attachmentUrl) {
+        // todo: deleting old items if there is a different file extension is not working
+        s3.deleteObject({ Bucket: bucketName, Key: listItem.attachmentUrl }, (err) => {
+          if (err)
+            return res.status(INTERNAL_SERVER_ERROR).json({
+              message:
+                'There has been an error deleting your previous attachment, please try again later',
+            });
+        });
+      }
       await listService.deleteListItem(listId, itemId);
       const updatedList = await listService.getListById(listId);
       return res.status(OK).json({ message: 'List item deleted', list: updatedList });
@@ -134,19 +150,37 @@ listRouter.post(
   },
 );
 
-listRouter.get(
+listRouter.post(
   `/:listId/:itemId/upload`,
   passport.authenticate('jwt', { session: false }),
+  validateDTO(GetS3FileUploadUrlDTO),
   async (req, res) => {
-    const bucketName = `listu-${config.env}`;
     const expires = 60 * 10;
-    console.log(bucketName);
+    const fileName = req.body.name;
+    const listItemId = req.params.itemId;
     try {
-      const itemId = req.params.itemId;
-      // const url = s3.getSignedUrl('getObject', {
-      // })
-      // const updatedItem = await listService.updateListItem(itemId, listItem);
-      return res.status(OK).json({});
+      const listItem = await listService.getListItemById(listItemId);
+      if (listItem === null) {
+        return res.status(BAD_REQUEST).json({ message: 'list item does not exist' });
+      }
+      if (listItem.attachmentUrl) {
+        // todo: deleting old items if there is a different file extension is not working
+        s3.deleteObject({ Bucket: bucketName, Key: listItem.attachmentUrl }, (err) => {
+          if (err)
+            return res.status(INTERNAL_SERVER_ERROR).json({
+              message:
+                'There has been an error deleting your previous attachment, please try again later',
+            });
+        });
+      }
+      const url = s3.getSignedUrl('putObject', {
+        Bucket: bucketName,
+        Key: fileName,
+        Expires: expires,
+      });
+      const objectUrl = `https://listu-${config.env}.s3.amazonaws.com/${fileName}`;
+      const updated = await listService.updateListItemAttachmentUrl(req.params.itemId, objectUrl);
+      return res.status(OK).json({ url, item: updated });
     } catch (e) {
       return res
         .status(BAD_REQUEST)
