@@ -163,29 +163,41 @@ listRouter.post(
       if (listItem === null) {
         return res.status(BAD_REQUEST).json({ message: 'list item does not exist' });
       }
-      if (listItem.attachmentUrl) {
-        // todo: deleting old items if there is a different file extension is not working
-        s3.deleteObject({ Bucket: bucketName, Key: listItem.attachmentUrl }, (err) => {
-          if (err)
-            return res.status(INTERNAL_SERVER_ERROR).json({
-              message:
-                'There has been an error deleting your previous attachment, please try again later',
-            });
-        });
-      }
+      // if (listItem.attachmentUrl) {
+      //   // todo: deleting old items if there is a different file extension is not working
+      //   s3.deleteObject({ Bucket: bucketName, Key: listItem.attachmentUrl }, (err) => {
+      //     if (err)
+      //       return res.status(INTERNAL_SERVER_ERROR).json({
+      //         message:
+      //           'There has been an error deleting your previous attachment, please try again later',
+      //       });
+      //   });
+      // }
       console.log(config);
       console.log('bucket', bucketName);
       console.log(fileName);
       console.log(expires);
-      const url = s3.getSignedUrl('putObject', {
-        Bucket: bucketName,
-        Key: fileName,
-        Expires: expires,
-      });
-      console.log(url);
-      const objectUrl = `https://listu-${config.env}.s3.amazonaws.com/${fileName}`;
-      const updated = await listService.updateListItemAttachmentUrl(req.params.itemId, objectUrl);
-      return res.status(OK).json({ url, item: updated });
+      s3.getSignedUrl(
+        'putObject',
+        {
+          Bucket: bucketName,
+          Key: fileName,
+          Expires: expires,
+        },
+        async (error, url) => {
+          console.log(error, url);
+          if (error)
+            return res
+              .status(500)
+              .json({ message: 'There has been an error generating the url to upload the file.' });
+          const objectUrl = `https://listu-${config.env}.s3.amazonaws.com/${fileName}`;
+          const updated = await listService.updateListItemAttachmentUrl(
+            req.params.itemId,
+            objectUrl,
+          );
+          return res.status(OK).json({ url, item: updated });
+        },
+      );
     } catch (e) {
       return res
         .status(BAD_REQUEST)
