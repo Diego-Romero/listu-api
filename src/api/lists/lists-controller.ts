@@ -173,11 +173,16 @@ listRouter.post(
             });
         });
       }
+      console.log(config);
+      console.log('bucket', bucketName);
+      console.log(fileName);
+      console.log(expires);
       const url = s3.getSignedUrl('putObject', {
         Bucket: bucketName,
         Key: fileName,
         Expires: expires,
       });
+      console.log(url);
       const objectUrl = `https://listu-${config.env}.s3.amazonaws.com/${fileName}`;
       const updated = await listService.updateListItemAttachmentUrl(req.params.itemId, objectUrl);
       return res.status(OK).json({ url, item: updated });
