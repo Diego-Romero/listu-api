@@ -7,16 +7,11 @@ import { setMiddleWare } from './loaders/middleware';
 import userRouter from './api/user/userController';
 import seedingRouter from './api/seeding/seedingController';
 import listRouter from './api/lists/lists-controller';
-import AWS from 'aws-sdk';
 
 const app = express();
 const port = config.port || 8080;
 
 setMiddleWare(app);
-AWS.config.update({
-  accessKeyId: config.awsAccessKey,
-  secretAccessKey: config.awsSecretAccessKey,
-});
 
 // health check
 app.get('/', (req: Request, res: Response) => {
