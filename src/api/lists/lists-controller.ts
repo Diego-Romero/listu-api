@@ -65,7 +65,6 @@ listRouter.delete(
     }
     try {
       if (listItem.attachmentUrl) {
-        // todo: deleting old items if there is a different file extension is not working
         s3.deleteObject({ Bucket: bucketName, Key: listItem.attachmentUrl }, (err) => {
           if (err)
             return res.status(INTERNAL_SERVER_ERROR).json({
