@@ -5,7 +5,7 @@ export default class UpdateListItemDto {
   _id!: string;
 
   @IsDefined()
-  @Length(2, 50)
+  @Length(2, 2000)
   name!: string;
 
   @IsDefined()
