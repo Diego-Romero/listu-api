@@ -29,7 +29,7 @@ userRouter.post(`/contact`, validateDTO(ContactDto), async (req, res) => {
     await emailService.sendContactMessageEmail(message, email);
     return res.sendStatus(OK);
   } catch (e) {
-    console.log(e, e.response.body.errors)
+    console.log(e, e.response.body.errors);
     return res.status(status.BAD_REQUEST).json({
       message: 'There has been an error sending the contact message, please try again later',
       error: e.response.body.errors,
@@ -170,7 +170,9 @@ userRouter.post(
             await emailService.sendAddedToListEmail(email, listRecord.name);
           } else return res.status(BAD_REQUEST).json({ message: 'User is already in the list' });
         }
-        return res.status(OK).json({ message: `${email} has been invited to use this list` });
+        return res
+          .status(OK)
+          .json({ message: `${email} has been invited to use this list`, user: userRecord });
       }
     } catch (e) {
       return res.status(INTERNAL_SERVER_ERROR).json({
