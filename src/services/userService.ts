@@ -34,10 +34,21 @@ class UserService {
   async getUser(userId: string): Promise<User | null> {
     const userRecord = await UserModel.findById(userId).populate({
       path: 'lists',
-      populate: {
-        path: 'createdBy',
-      },
-      sort: { createdAt: 1 },
+      model: 'List',
+      populate: [
+        {
+          path: 'items',
+          model: 'ListItem',
+        },
+        {
+          path: 'users',
+          model: 'User',
+        },
+        {
+          path: 'createdBy',
+          model: 'User',
+        },
+      ],
     });
     return userRecord;
   }

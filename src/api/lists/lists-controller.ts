@@ -37,6 +37,22 @@ listRouter.post(
   },
 );
 
+listRouter.patch(
+  '/:listId',
+  passport.authenticate('jwt', { session: false }),
+  validateDTO(CreateListDto),
+  async (req, res) => {
+    const listId = req.params.listId;
+    try {
+      const listRecord = await listService.updateList(req.body, listId);
+      console.log('returning', listRecord);
+      return res.status(OK).json(listRecord);
+    } catch (err) {
+      return res.status(BAD_REQUEST).json({ message: err.toString() });
+    }
+  },
+);
+
 listRouter.post(
   '/:listId',
   passport.authenticate('jwt', { session: false }),

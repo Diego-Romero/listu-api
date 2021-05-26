@@ -8,6 +8,14 @@ interface CreateListValues {
   description: string;
 }
 class ListService {
+  // async getListsWithItems(userId: string): Promise<List[]> {
+  //   const user = await UserModel.findById(userId).populate({
+  //     path: 'lists',
+  //     populate: {
+  //       path: 'createdBy',
+  //     }
+  //   })
+  // }
   async getListById(id: string): Promise<List | null> {
     return await ListModel.findById(id)
       .populate('users')
@@ -43,6 +51,14 @@ class ListService {
       await userRecord.save();
     }
     return newList;
+  }
+
+  async updateList(values: CreateListValues, listId: string): Promise<List> {
+    const listRecord = (await ListModel.findById(listId)) as List;
+    listRecord.name = values.name;
+    listRecord.description = values.description;
+    await listRecord.save();
+    return listRecord;
   }
 
   async createListItem(values: CreateListValues, user: User, listId: string): Promise<ListItem> {
