@@ -65,10 +65,24 @@ class ListService {
   }
 
   async updateList(values: CreateListValues, listId: string): Promise<List> {
-    const listRecord = (await ListModel.findById(listId)) as List;
+    let listRecord = (await ListModel.findById(listId)) as List;
     listRecord.name = values.name;
     listRecord.description = values.description;
     await listRecord.save();
+    listRecord = await ListModel.populate(listRecord, [
+      {
+        path: 'users',
+        model: 'User',
+      },
+      {
+        path: 'createdBy',
+        model: 'User',
+      },
+      {
+        path: 'items',
+        model: 'ListItem',
+      },
+    ]);
     return listRecord;
   }
 
