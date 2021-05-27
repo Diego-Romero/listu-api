@@ -45,7 +45,18 @@ class ListService {
   async createList(values: CreateListValues, user: FilteredUser): Promise<List> {
     const userRecord = (await UserModel.findById(user._id)) as User;
     const listValues = { createdBy: userRecord._id, users: [userRecord._id], ...values, items: [] };
-    const newList = await ListModel.create(listValues);
+    let newList = await await ListModel.create(listValues);
+    newList = await ListModel.populate(newList, [
+      {
+        path: 'users',
+        model: 'User',
+      },
+      {
+        path: 'createdBy',
+        model: 'User',
+      },
+    ]);
+
     if (userRecord !== null) {
       userRecord.lists.push(newList._id);
       await userRecord.save();
