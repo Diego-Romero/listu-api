@@ -1,5 +1,4 @@
 import mongoose, { Document } from 'mongoose';
-import { User } from './userModel';
 
 export interface ListItem extends Document {
   description: string;

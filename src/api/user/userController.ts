@@ -5,7 +5,7 @@ import UserService from '../../services/userService';
 import UserSignUpDto from '../../dto/user/userSignUpDto';
 import validateDTO from '../../middleware/validateDto';
 import UserLoginDto from '../../dto/user/userLoginDto';
-import { FilteredUser, filterUserInReq } from '../../utils';
+import { FilteredUser, filterUserInReq, separateListItems } from '../../utils';
 import { User } from '../../models/userModel';
 import InviteFriendDto from '../../dto/user/inviteFriendDto';
 import ListService from '../../services/listService';
@@ -133,7 +133,8 @@ userRouter.get('/me', passport.authenticate('jwt', { session: false }), async (r
     const userRecord = await userService.getUser(user._id);
     if (userRecord === null) res.status(NOT_FOUND).json({ message: 'User not found' });
     else {
-      res.status(status.OK).json(filterUserInReq(userRecord));
+      const filteredUser = filterUserInReq(userRecord);
+      res.status(status.OK).json(filteredUser);
     }
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({ message: e.toString() });

@@ -8,14 +8,6 @@ interface CreateListValues {
   description: string;
 }
 class ListService {
-  // async getListsWithItems(userId: string): Promise<List[]> {
-  //   const user = await UserModel.findById(userId).populate({
-  //     path: 'lists',
-  //     populate: {
-  //       path: 'createdBy',
-  //     }
-  //   })
-  // }
   async getListById(id: string): Promise<List | null> {
     return await ListModel.findById(id)
       .populate('users')
@@ -27,15 +19,6 @@ class ListService {
         },
       })
       .populate('createdBy');
-  }
-
-  separateListItems(list: List): { done: ListItem[]; undone: ListItem[] } {
-    const done: ListItem[] = [];
-    const undone: ListItem[] = [];
-
-    for (const item of list.items) item.done ? done.push(item) : undone.push(item);
-
-    return { done, undone };
   }
 
   async getListItemById(id: string): Promise<ListItem | null> {
@@ -90,7 +73,7 @@ class ListService {
     const listRecord = await ListModel.findById(listId);
     if (listRecord !== null) {
       const userId = user._id;
-      const itemValues = { createdBy: userId, ...values, done: false };
+      const itemValues = { createdBy: userId, name: values.name, done: false, description: '' };
       const newListItem = await ListItemModel.create(itemValues);
       listRecord.items.push(newListItem._id);
       await listRecord.save();

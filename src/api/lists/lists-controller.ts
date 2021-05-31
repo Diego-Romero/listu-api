@@ -6,7 +6,7 @@ import CreateListItemDto from '../../dto/user/createListItemDto';
 import validateDTO from '../../middleware/validateDto';
 import { User } from '../../models/userModel';
 import ListService from '../../services/listService';
-import { FilteredUser } from '../../utils';
+import { FilteredUser, separateListItems } from '../../utils';
 import UpdateListItemDto from '../../dto/user/updateListItemDto';
 import { ListItem } from '../../models/ListItemModel';
 import AWS from 'aws-sdk';
@@ -45,7 +45,6 @@ listRouter.patch(
     const listId = req.params.listId;
     try {
       const listRecord = await listService.updateList(req.body, listId);
-      console.log('returning', listRecord);
       return res.status(OK).json(listRecord);
     } catch (err) {
       return res.status(BAD_REQUEST).json({ message: err.toString() });
@@ -64,7 +63,7 @@ listRouter.post(
       const listItemRecord = await listService.createListItem(req.body, user as User, listId);
       return res.status(CREATED).json(listItemRecord);
     } catch (err) {
-      return res.status(BAD_REQUEST).json({ message: err.toString() });
+      return res.sendStatus(BAD_REQUEST);
     }
   },
 );
@@ -128,7 +127,7 @@ listRouter.get('/:id', passport.authenticate('jwt', { session: false }), async (
     const listRecord = await listService.getListById(id);
     if (listRecord === null)
       return res.status(BAD_REQUEST).json({ message: 'List does not exist' });
-    const { done, undone } = listService.separateListItems(listRecord);
+    const { done, undone } = separateListItems(listRecord);
     return res.status(OK).json({ list: listRecord, done, undone });
   } catch (err) {
     return res.status(BAD_REQUEST).json({ message: err.toString() });
