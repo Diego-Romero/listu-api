@@ -12,6 +12,7 @@ import { ListItem } from '../../models/ListItemModel';
 import AWS from 'aws-sdk';
 import config from '../../config/config';
 import GetS3FileUploadUrlDTO from '../../dto/user/getS3FileUploadUrlDto';
+import UpdateListDto from '../../dto/user/updateList.Dto';
 
 const listRouter = express.Router();
 const listService = new ListService();
@@ -37,10 +38,10 @@ listRouter.post(
   },
 );
 
-listRouter.patch(
+listRouter.put(
   '/:listId',
   passport.authenticate('jwt', { session: false }),
-  validateDTO(CreateListDto),
+  validateDTO(UpdateListDto),
   async (req, res) => {
     const listId = req.params.listId;
     try {
