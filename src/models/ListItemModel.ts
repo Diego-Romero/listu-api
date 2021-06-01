@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 
 export interface ListItem extends Document {
-  description: string;
+  description?: string;
   name: string;
   done: boolean;
   dateCompleted?: Date;
@@ -19,8 +19,7 @@ const schema = new mongoose.Schema(
     description: {
       type: String,
       required: false,
-      minlength: 2,
-      maxlength: 1000,
+      maxlength: 10000,
     },
     done: {
       type: Boolean,

@@ -73,7 +73,7 @@ class ListService {
     const listRecord = await ListModel.findById(listId);
     if (listRecord !== null) {
       const userId = user._id;
-      const itemValues = { createdBy: userId, name: values.name, done: false, description: '' };
+      const itemValues = { createdBy: userId, name: values.name, done: false };
       const newListItem = await ListItemModel.create(itemValues);
       listRecord.items.push(newListItem._id);
       await listRecord.save();
