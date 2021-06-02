@@ -40,7 +40,20 @@ userRouter.post(`/contact`, validateDTO(ContactDto), async (req, res) => {
 userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res) => {
   try {
     const user = await userService.register(req.body);
-    return res.status(status.CREATED).json(filterUserInReq(user as User));
+    req.user = user;
+    passport.authenticate('local', { session: false }, (err, user, { message }) => {
+      if (err !== null || !user) return res.status(BAD_REQUEST).json({ message });
+      req.login(user, { session: false }, async (loginError) => {
+        if (loginError)
+          return res
+            .status(BAD_REQUEST)
+            .json({ message: 'Unable to authenticate with those details' });
+
+        const filteredUser: FilteredUser = filterUserInReq(user);
+        const token = jwt.sign(filteredUser, config.jwtSecret as string);
+        return res.status(OK).json({ token, user: filteredUser });
+      });
+    })(req, res);
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({ message: 'Email already exists' });
   }
