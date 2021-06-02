@@ -43,12 +43,7 @@ userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res) => {
     req.user = user;
     passport.authenticate('local', { session: false }, (err, user, { message }) => {
       if (err !== null || !user) return res.status(BAD_REQUEST).json({ message });
-      req.login(user, { session: false }, async (loginError) => {
-        if (loginError)
-          return res
-            .status(BAD_REQUEST)
-            .json({ message: 'Unable to authenticate with those details' });
-
+      req.login(user, { session: false }, async () => {
         const filteredUser: FilteredUser = filterUserInReq(user);
         const token = jwt.sign(filteredUser, config.jwtSecret as string);
         return res.status(OK).json({ token, user: filteredUser });
@@ -100,26 +95,20 @@ userRouter.post('/reset-password/:token', validateDTO(ResetPasswordDto), async (
 userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (req, res) => {
   const id = req.params.id;
   try {
-    const user = await userService.getUser(id);
-    if (user === null)
+    const userRecord = await userService.getUser(id);
+    if (userRecord === null)
       return res
         .status(BAD_REQUEST)
         .json({ message: `Friend with this email has not been invited yet.` });
 
-    if (user.password && user.password.length > 0)
+    if (userRecord.password && userRecord.password.length > 0)
       return res.status(BAD_REQUEST).json({ message: 'User has already been registered' });
 
     const updatedUser = await userService.registerFriend(req.body, id);
     req.user = updatedUser;
-
     passport.authenticate('local', { session: false }, (err, user, { message }) => {
       if (err !== null || !user) return res.status(BAD_REQUEST).json({ message });
-      req.login(user, { session: false }, async (loginError) => {
-        if (loginError)
-          return res
-            .status(BAD_REQUEST)
-            .json({ message: 'Unable to authenticate with those details' });
-
+      req.login(user, { session: false }, async () => {
         const filteredUser: FilteredUser = filterUserInReq(user);
         const token = jwt.sign(filteredUser, config.jwtSecret as string);
         return res.status(OK).json({ token, user: filteredUser });
