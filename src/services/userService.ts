@@ -4,16 +4,91 @@ import config from '../config/config';
 import UserSignUpDto from '../dto/user/userSignUpDto';
 import { List } from '../models/list-model';
 import RegisterFriendDTO from '../dto/user/registerFriendDto';
+import ListService from './listService';
+import { FilteredUser } from '../utils';
+import ListItemModel from '../models/ListItemModel';
 
 export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, config.saltRounds);
 }
+
+const listService = new ListService();
 
 class UserService {
   async register(user: UserSignUpDto): Promise<User> {
     const password = await hashPassword(user.password);
     const userRecord = await UserModel.create({ ...user, password, lists: [] });
     return userRecord;
+  }
+
+  async createExampleListsForNewUser(user: User): Promise<void> {
+    const defaultList = await listService.createList(
+      {
+        name: 'A list example',
+        description: 'You can include a description on your lists too!',
+      },
+      user as FilteredUser,
+    );
+    const userId = user._id;
+    const item1Values = {
+      createdBy: userId,
+      name: 'type in the input above to create a new item',
+      done: false,
+    };
+    const item1 = await ListItemModel.create(item1Values);
+    const item2Values = {
+      createdBy: userId,
+      name: 'or press space to create a new item',
+      done: false,
+    };
+    const item2 = await ListItemModel.create(item2Values);
+    const item3Values = {
+      createdBy: userId,
+      name: 'You can move the items around to sort them',
+      done: false,
+    };
+    const item3 = await ListItemModel.create(item3Values);
+    const item4Values = {
+      createdBy: userId,
+      name: 'Click on the item to edit it',
+      done: false,
+    };
+    const item4 = await ListItemModel.create(item4Values);
+    const item5Values = {
+      createdBy: userId,
+      name: 'You can also attach an image to each item',
+      done: false,
+    };
+    const item5 = await ListItemModel.create(item5Values);
+    const item6Values = {
+      createdBy: userId,
+      name: 'Mark as done by clicking on the green tick',
+      done: false,
+    };
+    const item6 = await ListItemModel.create(item6Values);
+    const item7Values = {
+      createdBy: userId,
+      name: 'Delete item by clicking on the red cross',
+      done: true,
+    };
+    const item7 = await ListItemModel.create(item7Values);
+    const item8Values = {
+      createdBy: userId,
+      name: 'Return done items by clicking on them',
+      done: true,
+    };
+    const item8 = await ListItemModel.create(item8Values);
+
+    defaultList.items.push(item1);
+    defaultList.items.push(item2);
+    defaultList.items.push(item3);
+    defaultList.items.push(item4);
+    defaultList.items.push(item5);
+    defaultList.items.push(item6);
+    defaultList.items.push(item7);
+    defaultList.items.push(item8);
+
+    defaultList.save();
   }
 
   async registerFriend(user: RegisterFriendDTO, id: string): Promise<User> {

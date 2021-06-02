@@ -5,8 +5,7 @@ import UserService from '../../services/userService';
 import UserSignUpDto from '../../dto/user/userSignUpDto';
 import validateDTO from '../../middleware/validateDto';
 import UserLoginDto from '../../dto/user/userLoginDto';
-import { FilteredUser, filterUserInReq, separateListItems } from '../../utils';
-import { User } from '../../models/userModel';
+import { FilteredUser, filterUserInReq } from '../../utils';
 import InviteFriendDto from '../../dto/user/inviteFriendDto';
 import ListService from '../../services/listService';
 import { EmailService } from '../../services/emailService';
@@ -40,6 +39,7 @@ userRouter.post(`/contact`, validateDTO(ContactDto), async (req, res) => {
 userRouter.post(`/register`, validateDTO(UserSignUpDto), async (req, res) => {
   try {
     const user = await userService.register(req.body);
+    await userService.createExampleListsForNewUser(user);
     req.user = user;
     passport.authenticate('local', { session: false }, (err, user, { message }) => {
       if (err !== null || !user) return res.status(BAD_REQUEST).json({ message });
