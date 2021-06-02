@@ -25,7 +25,7 @@ class UserService {
     const defaultList = await listService.createList(
       {
         name: 'A list example',
-        description: 'You can include a description on your lists too!',
+        description: 'You can also invite friends to share this list with you',
       },
       user as FilteredUser,
     );
@@ -89,6 +89,13 @@ class UserService {
     defaultList.items.push(item8);
 
     defaultList.save();
+    await listService.createList(
+      {
+        name: 'Click on pencil to delete lists',
+        description: 'You can include a description on your lists too!',
+      },
+      user as FilteredUser,
+    );
   }
 
   async registerFriend(user: RegisterFriendDTO, id: string): Promise<User> {

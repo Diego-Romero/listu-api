@@ -1,5 +1,5 @@
 import express from 'express';
-import status, { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status';
+import status, { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status';
 import passport from 'passport';
 import UserService from '../../services/userService';
 import UserSignUpDto from '../../dto/user/userSignUpDto';
@@ -104,16 +104,8 @@ userRouter.post(`/friend/register/:id`, validateDTO(RegisterFriendDTO), async (r
     if (userRecord.password && userRecord.password.length > 0)
       return res.status(BAD_REQUEST).json({ message: 'User has already been registered' });
 
-    const updatedUser = await userService.registerFriend(req.body, id);
-    req.user = updatedUser;
-    passport.authenticate('local', { session: false }, (err, user, { message }) => {
-      if (err !== null || !user) return res.status(BAD_REQUEST).json({ message });
-      req.login(user, { session: false }, async () => {
-        const filteredUser: FilteredUser = filterUserInReq(user);
-        const token = jwt.sign(filteredUser, config.jwtSecret as string);
-        return res.status(OK).json({ token, user: filteredUser });
-      });
-    })(req, res);
+    await userService.registerFriend(req.body, id);
+    res.status(CREATED).json({ message: 'You are now ready to login' });
   } catch (e) {
     return res.status(status.BAD_REQUEST).json({
       message: 'There has been an error creating this user, please try again later.',
