@@ -16,10 +16,12 @@ import UpdateListDto from '../../dto/user/updateList.Dto';
 
 const listRouter = express.Router();
 const listService = new ListService();
+
 AWS.config.update({
   accessKeyId: config.awsAccessKey,
   secretAccessKey: config.awsSecretAccessKey,
 });
+
 const s3 = new AWS.S3({ signatureVersion: 'v4' });
 const bucketName = `listu-${config.env}`;
 

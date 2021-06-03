@@ -1,5 +1,7 @@
 # Listu Api
 
+FE code can be found here: https://github.com/Diego-Romero/listu-client
+
 ## Running in dev mode
 
 ### Adding env variables
@@ -19,8 +21,11 @@
     "PORT": "8080",
     "SESSION_SECRET": "keyboard cat",
     "DB_CONNECTION": "mongodb://localhost/listu",
+    "JWT_SECRET": "secret",
     "CLIENT_URL": "http://localhost:3000",
-    "SENDGRID_API_KEY": ""
+    "SENDGRID_API_KEY": "your key goes here",
+    "AWS_ACCESS_KEY": "your access key goes here",
+    "AWS_SECRET_ACCESS_KEY": "your aws secret access key goes here"
   },
   "ext": "js,json,ts"
 }
